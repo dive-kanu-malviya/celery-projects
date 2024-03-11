@@ -8,6 +8,9 @@ r = redis.Redis(host='localhost', port=6380, db=0)
 
 @app.route('/send_message', methods=['POST'])
 def send_message():
+    """
+    r.rpush - push one or more values onto the right end of a list stored at a key in a Redis database
+    """
     message = request.json['message']
     r.rpush('pending_tasks', message)
     process_message.delay(message)
@@ -15,6 +18,10 @@ def send_message():
 
 @app.route('/task_counts', methods=['GET'])
 def get_task_counts():
+    """
+    llen - list length method is predefined in the redis
+            It retrieves the length of the pending and complete list and returns the value
+    """
     pending_tasks = r.llen('pending_tasks')
     completed_tasks = r.llen('completed_tasks')
     return jsonify({'pending': pending_tasks, 'completed': completed_tasks})
